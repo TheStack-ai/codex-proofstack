@@ -80,12 +80,17 @@
 - Create: `.gitignore`
 - Create: `package.json`
 - Create: `pnpm-workspace.yaml`
+- Create: `biome.jsonc`
 - Create: `tsconfig.base.json`
 - Create: `vitest.workspace.ts`
 - Create: `packages/core/package.json`
 - Create: `packages/core/tsconfig.json`
+- Create: `packages/core/vitest.config.ts`
+- Create: `packages/core/src/index.ts`
 - Create: `packages/cli/package.json`
 - Create: `packages/cli/tsconfig.json`
+- Create: `packages/cli/vitest.config.ts`
+- Create: `packages/cli/src/main.ts`
 
 - [ ] **Step 1: Add root workspace files**
 
@@ -101,9 +106,13 @@
     "build": "pnpm -r build",
     "test": "pnpm --filter @proofstack/core build && pnpm -r test",
     "typecheck": "pnpm -r typecheck",
-    "verify": "pnpm test && pnpm typecheck && pnpm build"
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "verify": "pnpm lint && pnpm test && pnpm typecheck && pnpm build"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
+    "@types/node": "^24.0.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   }
@@ -117,6 +126,47 @@ packages:
   - apps/*
 ```
 
+```jsonc
+// biome.jsonc
+{
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "files": {
+    "includes": ["**", "!**/node_modules", "!**/dist", "!**/coverage", "!**/.proofstack"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "double", "semicolons": "asNeeded" }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noConfusingVoidType": "error",
+        "noFallthroughSwitchClause": "error"
+      },
+      "style": {
+        "noDefaultExport": "error",
+        "useImportType": "error",
+        "noNonNullAssertion": "error",
+        "noParameterAssign": "error"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
+      }
+    }
+  }
+}
+```
+
 ```json
 // tsconfig.base.json
 {
@@ -127,10 +177,21 @@ packages:
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   }
 }
 ```
@@ -150,6 +211,7 @@ node_modules/
 dist/
 coverage/
 .proofstack/
+.codegraph/
 .playwright-mcp/
 playwright-report/
 test-results/
@@ -175,7 +237,7 @@ test-results/
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": { "zod": "^3.25.67" }
+  "dependencies": { "zod": "^4.0.5" }
 }
 ```
 
@@ -220,10 +282,15 @@ test-results/
 // packages/core/vitest.config.ts and packages/cli/vitest.config.ts
 import { defineConfig } from "vitest/config";
 
+// biome-ignore lint/style/noDefaultExport: Vitest requires a default config export.
 export default defineConfig({
   test: { include: ["test/**/*.test.ts"], environment: "node" },
 });
 ```
+
+Add an empty module entrypoint in each package (`export {};`) so the initial typecheck exercises
+the strict compiler configuration before behavior is added. These files are scaffolding only; the
+first behavior still starts with a failing test in Task 2.
 
 - [ ] **Step 4: Install and verify workspace discovery**
 
@@ -238,7 +305,7 @@ Expected: both packages exit `0` even before source files exist.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add .gitignore package.json pnpm-workspace.yaml tsconfig.base.json vitest.workspace.ts packages
+git add .gitignore package.json pnpm-workspace.yaml biome.jsonc tsconfig.base.json vitest.workspace.ts packages
 git commit -m "chore: scaffold ProofStack workspace"
 ```
 
