@@ -85,10 +85,12 @@
 - Create: `vitest.workspace.ts`
 - Create: `packages/core/package.json`
 - Create: `packages/core/tsconfig.json`
+- Create: `packages/core/tsconfig.build.json`
 - Create: `packages/core/vitest.config.ts`
 - Create: `packages/core/src/index.ts`
 - Create: `packages/cli/package.json`
 - Create: `packages/cli/tsconfig.json`
+- Create: `packages/cli/tsconfig.build.json`
 - Create: `packages/cli/vitest.config.ts`
 - Create: `packages/cli/src/main.ts`
 
@@ -101,7 +103,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm --filter @proofstack/core build && pnpm -r test",
@@ -111,7 +113,7 @@
     "verify": "pnpm lint && pnpm test && pnpm typecheck && pnpm build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
+    "@biomejs/biome": "^2.5.4",
     "@types/node": "^24.0.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
@@ -124,12 +126,15 @@
 packages:
   - packages/*
   - apps/*
+
+allowBuilds:
+  esbuild: true
 ```
 
 ```jsonc
 // biome.jsonc
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "files": {
     "includes": ["**", "!**/node_modules", "!**/dist", "!**/coverage", "!**/.proofstack"]
@@ -146,7 +151,7 @@ packages:
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "suspicious": {
         "noExplicitAny": "error",
         "noConfusingVoidType": "error",
@@ -233,7 +238,7 @@ test-results/
   "exports": { ".": "./dist/index.js" },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -250,7 +255,7 @@ test-results/
   "type": "module",
   "bin": { "proofstack": "./dist/main.js" },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -269,8 +274,20 @@ test-results/
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "vitest.config.ts"]
+}
+```
+
+```json
+// packages/core/tsconfig.build.json and packages/cli/tsconfig.build.json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
   "include": ["src/**/*.ts"]
 }
@@ -282,7 +299,6 @@ test-results/
 // packages/core/vitest.config.ts and packages/cli/vitest.config.ts
 import { defineConfig } from "vitest/config";
 
-// biome-ignore lint/style/noDefaultExport: Vitest requires a default config export.
 export default defineConfig({
   test: { include: ["test/**/*.test.ts"], environment: "node" },
 });
