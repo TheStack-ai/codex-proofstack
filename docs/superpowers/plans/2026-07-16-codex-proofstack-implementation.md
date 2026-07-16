@@ -1037,8 +1037,11 @@ git commit -m "feat(cli): orchestrate proof bundles and repair packets"
 ### Task 7: Build the reproducible broken and repaired demo
 
 **Files:**
+- Create: `DESIGN.md`
+- Create: `.omo/frontend-design/state.md`
 - Create: `examples/proofstack-demo/server.mjs`
 - Create: `examples/proofstack-demo/run-demo.mjs`
+- Create: `examples/proofstack-demo/styles.css`
 - Create: `examples/proofstack-demo/broken/index.html`
 - Create: `examples/proofstack-demo/broken/AGENTS.md`
 - Create: `examples/proofstack-demo/broken/proofstack.yml`
@@ -1047,7 +1050,7 @@ git commit -m "feat(cli): orchestrate proof bundles and repair packets"
 - Create: `examples/proofstack-demo/repaired/proofstack.yml`
 - Test: `examples/proofstack-demo/test.mjs`
 
-- [ ] **Step 1: Create the server and green-but-insufficient test**
+- [x] **Step 1: Create the server and green-but-insufficient test**
 
 ```js
 // examples/proofstack-demo/server.mjs
@@ -1071,7 +1074,7 @@ if (response.status !== 200 || (await response.json()).status !== "ok") process.
 console.log("health test passed");
 ```
 
-- [ ] **Step 2: Create broken and repaired fixtures**
+- [x] **Step 2: Create broken and repaired fixtures**
 
 ```html
 <!-- examples/proofstack-demo/broken/index.html -->
@@ -1098,7 +1101,7 @@ Verify tests before completion.
 Verify the rendered product before completion.
 ```
 
-- [ ] **Step 3: Create proof contracts**
+- [x] **Step 3: Create proof contracts**
 
 ```yaml
 # both proofstack.yml files; paths remain identical inside each fixture
@@ -1144,7 +1147,7 @@ claims:
         screenshot: release-console.png
 ```
 
-- [ ] **Step 4: Create the demo runner**
+- [x] **Step 4: Create the demo runner**
 
 ```js
 // examples/proofstack-demo/run-demo.mjs
@@ -1160,7 +1163,7 @@ server.kill("SIGTERM");
 process.exitCode = state === "broken" ? (exitCode === 1 ? 0 : 1) : exitCode;
 ```
 
-- [ ] **Step 5: Run both states and commit**
+- [x] **Step 5: Run both states and commit**
 
 Run: `node examples/proofstack-demo/run-demo.mjs broken`
 
@@ -1169,6 +1172,10 @@ Expected: wrapper exits `0`; generated report score is below `100`; rules and vi
 Run: `node examples/proofstack-demo/run-demo.mjs repaired`
 
 Expected: exits `0`; generated report score is `100`; screenshot contains visible status.
+
+Observed on July 16, 2026: the broken fixture exited through the expected failure path at 38% with
+two repair claims, while the repaired fixture produced a 100% bundle with zero repair claims. Both
+browser screenshots were opened and inspected after the final source edit.
 
 ```bash
 git add examples

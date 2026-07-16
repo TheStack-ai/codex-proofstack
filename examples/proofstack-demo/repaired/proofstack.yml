@@ -1,0 +1,49 @@
+version: 1
+project: proofstack-release-console
+allowedCommands:
+  - node
+claims:
+  - id: health
+    title: The service is healthy
+    weight: 1
+    checks:
+      - id: health-http
+        type: http
+        url: http://127.0.0.1:4173/health
+        status: 200
+        contains: ok
+  - id: tests
+    title: The health test passes
+    weight: 1
+    checks:
+      - id: health-command
+        type: command
+        command: node
+        args: [../test.mjs]
+  - id: artifact
+    title: The release artifact is present
+    weight: 1
+    checks:
+      - id: artifact-file
+        type: file
+        path: index.html
+        contains: data-release-id="rc-48"
+  - id: instructions
+    title: Project rules require rendered-product verification
+    weight: 2
+    checks:
+      - id: agents-rules
+        type: rules
+        path: AGENTS.md
+        mustContain:
+          - Verify the rendered product before completion.
+  - id: visible-status
+    title: The live page exposes an evidence-verified status
+    weight: 3
+    checks:
+      - id: status-browser
+        type: browser
+        url: http://127.0.0.1:4173
+        role: status
+        name: Evidence verified
+        screenshot: release-console.png
