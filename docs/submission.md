@@ -154,12 +154,14 @@ Execa, YAML, Biome, and pnpm.
 - Public repository: https://github.com/TheStack-ai/codex-proofstack
 - Hosted demo: https://thestack-ai.github.io/codex-proofstack/
 - Public YouTube demo: **[ ] replace with the public video URL after upload**
+- Codex `/feedback` session ID: `019f63ab-c2c0-7541-98fe-450f872884c4`
 
 ## Required release items
 
-- [ ] Paste the `/feedback` Codex session ID from the core build session.
+- [x] Paste the `/feedback` Codex session ID from the core build session.
 - [ ] Upload a public YouTube video under three minutes with audio naming Codex and GPT-5.6.
-- [ ] Verify the repository, demo, and YouTube link in a logged-out browser.
+- [x] Verify the repository and demo in a logged-out browser.
+- [ ] Verify the YouTube link in a logged-out browser.
 - [ ] Confirm Developer Tools is selected.
 - [ ] Preview the final Devpost page before submission.
 

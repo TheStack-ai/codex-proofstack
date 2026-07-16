@@ -1704,7 +1704,7 @@ The final README must include the actual hosted URL, screenshot, repository diag
 - Logged-out link verification checklist.
 - Required private-repository sharing addresses if the repository is not public.
 
-- [ ] **Step 4: Perform reader-first and logged-out QA**
+- [x] **Step 4: Perform reader-first and logged-out QA**
 
 Run: `pnpm verify`
 
@@ -1712,7 +1712,7 @@ Expected: complete verification ladder passes after documentation changes.
 
 Open README links and hosted demo in a logged-out browser. Expected: no authentication, no broken image, no local path, demo report loads, and repair copy works.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add README.md LICENSE docs
@@ -1726,7 +1726,7 @@ git commit -m "docs: prepare ProofStack hackathon submission"
 - Modify: `docs/submission.md`
 - Create: `docs/release-checklist.md`
 
-- [ ] **Step 1: Deploy the static dashboard**
+- [x] **Step 1: Deploy the static dashboard**
 
 Build: `pnpm --filter @proofstack/dashboard build`
 
@@ -1738,7 +1738,7 @@ Expected: production responds `200`, loads both demo bundles, and has no console
 
 Use `docs/demo-script.md`, record at 1440×900, narrate how Codex and GPT-5.6 were used, keep total duration below 2:50, upload publicly to YouTube, and verify playback while logged out.
 
-- [ ] **Step 3: Capture the Codex session ID**
+- [x] **Step 3: Capture the Codex session ID**
 
 Run `/feedback` in the core Codex build session. Add the returned session ID to the Devpost draft and `docs/release-checklist.md`. Do not publish private transcript content.
 
