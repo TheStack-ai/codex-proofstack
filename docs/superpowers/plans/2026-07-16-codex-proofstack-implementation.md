@@ -1649,7 +1649,7 @@ git commit -m "test: verify the complete ProofStack demo path"
 - Create: `docs/demo-script.md`
 - Create: `docs/submission.md`
 
-- [ ] **Step 1: Write the README with exact judge path**
+- [x] **Step 1: Write the README with exact judge path**
 
 README sections, in order:
 
@@ -1683,13 +1683,13 @@ pnpm --filter @proofstack/dashboard dev
 
 The final README must include the actual hosted URL, screenshot, repository diagram, supported check table, exit codes, and a statement that API keys are not required.
 
-- [ ] **Step 2: Add MIT license and demo narration**
+- [x] **Step 2: Add MIT license and demo narration**
 
 `LICENSE` uses the standard MIT text with copyright `2026 Duwon Park`.
 
 `docs/demo-script.md` follows the approved timing: 15s problem, 25s contract, 45s failed report, 35s Codex repair, 35s comparison, 20s architecture/privacy. Every shot names the exact route, command, or UI section shown.
 
-- [ ] **Step 3: Add complete Devpost submission copy**
+- [x] **Step 3: Add complete Devpost submission copy**
 
 `docs/submission.md` contains final-ready text for:
 
