@@ -1,5 +1,5 @@
-import { type Check, redactText } from "@proofstack/core"
-import type { AdapterContext, AdapterResult } from "./types.js"
+import type { Check } from "@proofstack/core"
+import { type AdapterContext, type AdapterResult, redactEvidence } from "./types.js"
 
 const HTTP_PROTOCOLS = new Set(["http:", "https:"])
 
@@ -34,7 +34,7 @@ export async function runHttpCheck(
       type: check.type,
       verdict: passed ? "pass" : "fail",
       summary: `HTTP ${response.status} in ${durationMs}ms; expected ${check.status}`,
-      detail: redactText(body, { home: context.home, maxLength: 2_000 }),
+      detail: redactEvidence(body, context, 2_000),
       durationMs,
     }
   } catch (error) {
@@ -44,7 +44,7 @@ export async function runHttpCheck(
       type: check.type,
       verdict: "unknown",
       summary: "HTTP target could not be reached",
-      detail: redactText(error.message, { home: context.home }),
+      detail: redactEvidence(error.message, context),
       durationMs: Math.round(performance.now() - startedAt),
     }
   }

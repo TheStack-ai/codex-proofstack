@@ -3,6 +3,7 @@ const TRUNCATION_MARKER = "[TRUNCATED]"
 
 export type RedactionOptions = {
   readonly home?: string
+  readonly projectRoot?: string
   readonly maxLength?: number
 }
 
@@ -25,10 +26,15 @@ export function redactText(input: string, options: RedactionOptions = {}): strin
     .replace(/\bsk-[A-Za-z0-9_-]+\b/g, "[REDACTED]")
     .replace(/\b(?:gh[pousr]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_-]+)\b/g, "[REDACTED]")
 
+  const projectSafeText =
+    options.projectRoot !== undefined && options.projectRoot.length > 0
+      ? credentialSafeText.split(options.projectRoot).join("$PROJECT_ROOT")
+      : credentialSafeText
+
   const pathSafeText =
     options.home !== undefined && options.home.length > 0
-      ? credentialSafeText.split(options.home).join("~")
-      : credentialSafeText
+      ? projectSafeText.split(options.home).join("~")
+      : projectSafeText
 
   return pathSafeText.length > maxLength
     ? `${pathSafeText.slice(0, maxLength)}\n${TRUNCATION_MARKER}`

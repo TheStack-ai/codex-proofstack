@@ -1,4 +1,4 @@
-import type { Evidence } from "@proofstack/core"
+import { type Evidence, redactText } from "@proofstack/core"
 
 export type AdapterContext = {
   readonly root: string
@@ -8,6 +8,14 @@ export type AdapterContext = {
 }
 
 export type AdapterResult = Omit<Evidence, "id" | "claimId">
+
+export function redactEvidence(input: string, context: AdapterContext, maxLength?: number): string {
+  return redactText(input, {
+    home: context.home,
+    projectRoot: context.root,
+    ...(maxLength === undefined ? {} : { maxLength }),
+  })
+}
 
 export function assertNever(value: never): never {
   throw new TypeError(`Unexpected adapter state: ${JSON.stringify(value)}`)

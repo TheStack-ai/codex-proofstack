@@ -1,6 +1,6 @@
-import { type Check, redactText } from "@proofstack/core"
+import type { Check } from "@proofstack/core"
 import { readProjectFile } from "./project-file.js"
-import { type AdapterContext, type AdapterResult, assertNever } from "./types.js"
+import { type AdapterContext, type AdapterResult, assertNever, redactEvidence } from "./types.js"
 
 export async function runRulesCheck(
   check: Extract<Check, { type: "rules" }>,
@@ -16,7 +16,7 @@ export async function runRulesCheck(
         type: check.type,
         verdict: "unknown",
         summary: "Rules file path is outside the project root",
-        detail: redactText(result.path, { home: context.home }),
+        detail: redactEvidence(result.path, context),
         durationMs: Date.now() - startedAt,
       }
     case "unreadable":
@@ -25,7 +25,7 @@ export async function runRulesCheck(
         type: check.type,
         verdict: "fail",
         summary: `${check.path} could not be read`,
-        detail: redactText(result.message, { home: context.home }),
+        detail: redactEvidence(result.message, context),
         durationMs: Date.now() - startedAt,
       }
     case "read": {
@@ -40,8 +40,8 @@ export async function runRulesCheck(
           ? `All ${check.mustContain.length} required rule phrases found`
           : `${missingPhrases.length} required rule ${phraseLabel} missing`,
         detail: allPhrasesFound
-          ? redactText(result.path, { home: context.home })
-          : redactText(`Missing: ${missingPhrases.join(", ")}`, { home: context.home }),
+          ? redactEvidence(result.path, context)
+          : redactEvidence(`Missing: ${missingPhrases.join(", ")}`, context),
         durationMs: Date.now() - startedAt,
       }
     }

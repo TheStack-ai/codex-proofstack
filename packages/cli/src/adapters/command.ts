@@ -1,7 +1,7 @@
 import { basename } from "node:path"
-import { type Check, redactText } from "@proofstack/core"
+import type { Check } from "@proofstack/core"
 import { execa } from "execa"
-import type { AdapterContext, AdapterResult } from "./types.js"
+import { type AdapterContext, type AdapterResult, redactEvidence } from "./types.js"
 
 const BLOCKED_EXECUTABLES = new Set(["dd", "diskutil", "mkfs", "reboot", "rm", "rmdir", "shutdown"])
 
@@ -48,7 +48,7 @@ export async function runCommandCheck(
       type: check.type,
       verdict: passed ? "pass" : "fail",
       summary: `${check.command} exited with code ${result.exitCode}`,
-      detail: redactText(result.all ?? "", { home: context.home }),
+      detail: redactEvidence(result.all ?? "", context),
       durationMs: Date.now() - startedAt,
     }
   } catch (error) {
@@ -58,7 +58,7 @@ export async function runCommandCheck(
       type: check.type,
       verdict: "unknown",
       summary: `${check.command} could not be executed`,
-      detail: redactText(error.message, { home: context.home }),
+      detail: redactEvidence(error.message, context),
       durationMs: Date.now() - startedAt,
     }
   }

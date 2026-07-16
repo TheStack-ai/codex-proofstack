@@ -888,13 +888,17 @@ git commit -m "feat(cli): capture HTTP and browser evidence"
 ### Task 6: Orchestrate verification, write bundles, and generate repair packets
 
 **Files:**
+- Modify: `packages/core/src/redact.ts`
+- Test: `packages/core/test/redact.test.ts`
 - Create: `packages/cli/src/run-verification.ts`
+- Create: `packages/cli/src/run-directory.ts`
 - Create: `packages/cli/src/write-bundle.ts`
 - Create: `packages/cli/src/repair-packet.ts`
+- Create: `packages/cli/src/version.ts`
 - Create: `packages/cli/src/main.ts`
 - Test: `packages/cli/test/run-verification.test.ts`
 
-- [ ] **Step 1: Write a failing orchestration test**
+- [x] **Step 1: Write a failing orchestration test**
 
 ```ts
 // packages/cli/test/run-verification.test.ts
@@ -914,13 +918,13 @@ it("creates a failed claim and bounded repair packet", async () => {
 });
 ```
 
-- [ ] **Step 2: Verify the test fails**
+- [x] **Step 2: Verify the test fails**
 
 Run: `pnpm --filter @proofstack/cli test`
 
 Expected: FAIL because orchestration is missing.
 
-- [ ] **Step 3: Implement repair packet and bundle writer**
+- [x] **Step 3: Implement repair packet and bundle writer**
 
 ```ts
 // packages/cli/src/repair-packet.ts
@@ -955,7 +959,7 @@ export async function writeBundle(root: string, bundle: ProofBundle): Promise<st
 }
 ```
 
-- [ ] **Step 4: Implement orchestration and CLI entry point**
+- [x] **Step 4: Implement orchestration and CLI entry point**
 
 ```ts
 // packages/cli/src/run-verification.ts
@@ -1013,7 +1017,7 @@ program.command("verify").option("--cwd <path>", "starting directory", process.c
 await program.parseAsync();
 ```
 
-- [ ] **Step 5: Run tests, build, CLI smoke, and commit**
+- [x] **Step 5: Run tests, build, CLI smoke, and commit**
 
 Run: `pnpm --filter @proofstack/cli test && pnpm --filter @proofstack/cli build`
 
@@ -1022,6 +1026,8 @@ Expected: orchestration test passes and `dist/main.js` is executable through Nod
 Run: `node packages/cli/dist/main.js verify --cwd packages/cli`
 
 Expected: exit `2` with `proofstack.yml not found`, proving the invalid-project path is explicit.
+
+Implementation note: bundles are schema-validated before disk, output and symlink traversal are contained inside the project, reports and screenshots use mode `0600`, project roots are replaced by `$PROJECT_ROOT` throughout evidence, and repair packets treat captured evidence as untrusted data. CLI help exits `0`; an invalid project exits `2` with an explicit message.
 
 ```bash
 git add packages/cli

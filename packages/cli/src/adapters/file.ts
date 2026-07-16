@@ -1,6 +1,6 @@
-import { type Check, redactText } from "@proofstack/core"
+import type { Check } from "@proofstack/core"
 import { readProjectFile } from "./project-file.js"
-import { type AdapterContext, type AdapterResult, assertNever } from "./types.js"
+import { type AdapterContext, type AdapterResult, assertNever, redactEvidence } from "./types.js"
 
 export async function runFileCheck(
   check: Extract<Check, { type: "file" }>,
@@ -16,7 +16,7 @@ export async function runFileCheck(
         type: check.type,
         verdict: "unknown",
         summary: "File path is outside the project root",
-        detail: redactText(result.path, { home: context.home }),
+        detail: redactEvidence(result.path, context),
         durationMs: Date.now() - startedAt,
       }
     case "unreadable":
@@ -25,7 +25,7 @@ export async function runFileCheck(
         type: check.type,
         verdict: "fail",
         summary: `${check.path} could not be read`,
-        detail: redactText(result.message, { home: context.home }),
+        detail: redactEvidence(result.message, context),
         durationMs: Date.now() - startedAt,
       }
     case "read": {
@@ -38,7 +38,7 @@ export async function runFileCheck(
         summary: hasExpectedContent
           ? `${check.path} verified`
           : `${check.path} is missing expected content`,
-        detail: redactText(result.content, { home: context.home }),
+        detail: redactEvidence(result.content, context),
         durationMs: Date.now() - startedAt,
       }
     }

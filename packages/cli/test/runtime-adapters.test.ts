@@ -111,7 +111,9 @@ describe("runtime adapters", () => {
 
     expect(whenRun.verdict).toBe("fail")
     expect(whenRun.asset).toBe("copy.png")
-    expect((await stat(join(givenContext.assetsDir, "copy.png"))).size).toBeGreaterThan(0)
+    const whenScreenshot = await stat(join(givenContext.assetsDir, "copy.png"))
+    expect(whenScreenshot.size).toBeGreaterThan(0)
+    expect(whenScreenshot.mode & 0o777).toBe(0o600)
   })
 
   it("passes a visible accessible role and name", async () => {

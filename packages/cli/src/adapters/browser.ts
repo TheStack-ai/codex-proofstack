@@ -1,8 +1,8 @@
-import { mkdir } from "node:fs/promises"
+import { chmod, mkdir } from "node:fs/promises"
 import { join } from "node:path"
-import { type Check, redactText } from "@proofstack/core"
+import type { Check } from "@proofstack/core"
 import { type Browser, chromium } from "playwright"
-import type { AdapterContext, AdapterResult } from "./types.js"
+import { type AdapterContext, type AdapterResult, redactEvidence } from "./types.js"
 
 const BROWSER_PROTOCOLS = new Set(["http:", "https:"])
 
@@ -36,7 +36,7 @@ export async function runBrowserCheck(
 
   let browser: Browser | undefined
   try {
-    await mkdir(context.assetsDir, { recursive: true })
+    await mkdir(context.assetsDir, { recursive: true, mode: 0o700 })
     browser = await chromium.launch({ headless: true })
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
     await page.goto(check.url, { waitUntil: "domcontentloaded", timeout: 15_000 })
@@ -53,14 +53,16 @@ export async function runBrowserCheck(
     const passed = textVisible && roleVisible
     const title = await page.title()
 
-    await page.screenshot({ path: join(context.assetsDir, asset), fullPage: true })
+    const screenshotPath = join(context.assetsDir, asset)
+    await page.screenshot({ path: screenshotPath, fullPage: true })
+    await chmod(screenshotPath, 0o600)
 
     return {
       checkId: check.id,
       type: check.type,
       verdict: passed ? "pass" : "fail",
       summary: passed ? "Browser assertion is visible" : "Browser assertion is not visible",
-      detail: redactText(`Final URL: ${page.url()}\nTitle: ${title}`, { home: context.home }),
+      detail: redactEvidence(`Final URL: ${page.url()}\nTitle: ${title}`, context),
       durationMs: Math.round(performance.now() - startedAt),
       asset,
     }
@@ -71,7 +73,7 @@ export async function runBrowserCheck(
       type: check.type,
       verdict: "unknown",
       summary: "Browser verification could not complete",
-      detail: redactText(error.message, { home: context.home }),
+      detail: redactEvidence(error.message, context),
       durationMs: Math.round(performance.now() - startedAt),
     }
   } finally {
