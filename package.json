@@ -6,6 +6,7 @@
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "build": "pnpm -r --if-present build",
+    "demo:generate": "node scripts/generate-demo-assets.mjs",
     "test": "pnpm --filter @proofstack/core build && pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "biome check .",

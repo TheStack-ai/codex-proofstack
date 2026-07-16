@@ -1322,6 +1322,11 @@ git commit -m "feat(dashboard): load proof bundles locally"
 ### Task 9: Build the evidence-first dashboard experience
 
 **Files:**
+- Create: `apps/dashboard/src/components/ActionButton.tsx`
+- Create: `apps/dashboard/src/components/BrandLockup.tsx`
+- Create: `apps/dashboard/src/components/StatusBadge.tsx`
+- Create: `apps/dashboard/src/components/EvidenceBeam.tsx`
+- Create: `apps/dashboard/src/components/PrimitiveShowcase.tsx`
 - Create: `apps/dashboard/src/components/VerdictHero.tsx`
 - Create: `apps/dashboard/src/components/ClaimMatrix.tsx`
 - Create: `apps/dashboard/src/components/EvidencePanel.tsx`
@@ -1330,7 +1335,7 @@ git commit -m "feat(dashboard): load proof bundles locally"
 - Create: `apps/dashboard/src/styles.css`
 - Test: `apps/dashboard/test/report.test.tsx`
 
-- [ ] **Step 1: Write a failing product-surface test**
+- [x] **Step 1: Write a failing product-surface test**
 
 ```tsx
 // apps/dashboard/test/report.test.tsx
@@ -1345,7 +1350,7 @@ it("shows the verification score and incomplete state", () => {
 });
 ```
 
-- [ ] **Step 2: Implement focused report components**
+- [x] **Step 2: Implement focused report components**
 
 ```tsx
 // apps/dashboard/src/components/VerdictHero.tsx
@@ -1375,7 +1380,7 @@ export function EvidencePanel({ evidence }: { evidence: Evidence[] }) { return <
 export function RepairPacket({ value }: { value: string }) { return <section className="repair"><div><p className="eyebrow">CODEX REPAIR PACKET</p><h2>Failed claims, bounded context, exact re-run.</h2></div><button onClick={() => navigator.clipboard.writeText(value)}>Copy for Codex</button><pre>{value}</pre></section>; }
 ```
 
-- [ ] **Step 3: Compose report state in App**
+- [x] **Step 3: Compose report state in App**
 
 ```tsx
 // apps/dashboard/src/App.tsx
@@ -1431,7 +1436,7 @@ export function App() {
 }
 ```
 
-- [ ] **Step 4: Add the complete visual system**
+- [x] **Step 4: Add the complete visual system**
 
 ```css
 /* apps/dashboard/src/styles.css */
@@ -1465,11 +1470,17 @@ pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:300px; overflow:a
 @media (max-width:560px) { .claim-grid { grid-template-columns:1fr; } h1 { font-size:48px; } }
 ```
 
-- [ ] **Step 5: Test, screenshot, and commit**
+- [x] **Step 5: Test, screenshot, and commit**
 
 Run: `pnpm --filter @proofstack/dashboard test && pnpm --filter @proofstack/dashboard build`
 
 Expected: product-surface test passes; Vite build emits static assets.
+
+Observed on July 16, 2026: the primitive showcase rendered without horizontal overflow at 375,
+768, and 1280 pixels. The live broken-run dashboard rendered at 390 and 1280 pixels, loaded its
+1440 × 900 browser evidence image, selected the highest-weight failure, and exposed the bounded
+repair packet. React Doctor scored the app 100/100; production output contained no development
+tooling strings.
 
 Open locally and capture 1440×900 plus 390×844 screenshots. Expected: no overflow, four claim cards visible on desktop, single-column mobile layout, strong verdict hierarchy.
 
