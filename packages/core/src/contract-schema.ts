@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { AccessibleRoleSchema } from "./accessible-role.js"
 
 const NonEmptyTextSchema = z.string().trim().min(1)
 
@@ -48,11 +49,15 @@ const BrowserCheckSchema = z
     type: z.literal("browser"),
     url: z.url(),
     text: z.string().optional(),
-    role: NonEmptyTextSchema.optional(),
+    role: AccessibleRoleSchema.optional(),
     name: z.string().optional(),
     screenshot: NonEmptyTextSchema.optional(),
   })
   .strict()
+  .refine((value) => value.name === undefined || value.role !== undefined, {
+    message: "Browser name requires a role",
+    path: ["name"],
+  })
   .readonly()
 
 const RulesCheckSchema = z

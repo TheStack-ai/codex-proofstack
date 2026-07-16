@@ -121,4 +121,54 @@ describe("ProofContractSchema", () => {
 
     expect(whenParsed).toThrow(/Check ids must be unique/)
   })
+
+  it("rejects browser roles outside the accessible role vocabulary", () => {
+    const givenContract = {
+      version: 1,
+      project: "invalid-role",
+      claims: [
+        {
+          id: "browser-role",
+          title: "Browser checks use accessible roles",
+          checks: [
+            {
+              id: "role-check",
+              type: "browser",
+              url: "http://127.0.0.1:4173",
+              role: "clickable-thing",
+            },
+          ],
+        },
+      ],
+    }
+
+    const whenParsed = () => ProofContractSchema.parse(givenContract)
+
+    expect(whenParsed).toThrow()
+  })
+
+  it("rejects an accessible name without a role", () => {
+    const givenContract = {
+      version: 1,
+      project: "orphan-name",
+      claims: [
+        {
+          id: "browser-name",
+          title: "Accessible names are attached to roles",
+          checks: [
+            {
+              id: "name-check",
+              type: "browser",
+              url: "http://127.0.0.1:4173",
+              name: "Run proof",
+            },
+          ],
+        },
+      ],
+    }
+
+    const whenParsed = () => ProofContractSchema.parse(givenContract)
+
+    expect(whenParsed).toThrow(/Browser name requires a role/)
+  })
 })

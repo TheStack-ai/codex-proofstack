@@ -773,11 +773,14 @@ git commit -m "feat(cli): resolve projects and collect local evidence"
 ### Task 5: Add HTTP and browser evidence
 
 **Files:**
+- Create: `packages/core/src/accessible-role.ts`
+- Modify: `packages/core/src/contract-schema.ts`
 - Create: `packages/cli/src/adapters/http.ts`
 - Create: `packages/cli/src/adapters/browser.ts`
+- Test: `packages/core/test/schema.test.ts`
 - Test: `packages/cli/test/runtime-adapters.test.ts`
 
-- [ ] **Step 1: Write failing runtime-adapter tests**
+- [x] **Step 1: Write failing runtime-adapter tests**
 
 ```ts
 // packages/cli/test/runtime-adapters.test.ts
@@ -807,13 +810,13 @@ it("fails browser-visible text and writes a screenshot", async () => {
 });
 ```
 
-- [ ] **Step 2: Verify tests fail**
+- [x] **Step 2: Verify tests fail**
 
 Run: `pnpm --filter @proofstack/cli test`
 
 Expected: FAIL because runtime adapters are missing.
 
-- [ ] **Step 3: Implement HTTP and browser adapters**
+- [x] **Step 3: Implement HTTP and browser adapters**
 
 ```ts
 // packages/cli/src/adapters/http.ts
@@ -863,7 +866,7 @@ export async function runBrowserCheck(check: Extract<Check, { type: "browser" }>
 }
 ```
 
-- [ ] **Step 4: Install browser and run tests**
+- [x] **Step 4: Install browser and run tests**
 
 Run: `pnpm exec playwright install chromium`
 
@@ -873,7 +876,9 @@ Run: `pnpm --filter @proofstack/cli test`
 
 Expected: HTTP test passes; browser negative assertion passes and screenshot exists in temporary assets.
 
-- [ ] **Step 5: Commit**
+Implementation note: runtime tests executed against installed Chromium, verify accessible role/name queries, reject unsupported protocols and screenshot traversal, and confirm a non-empty screenshot on disk. Browser role values are validated at the contract boundary, and names without roles are rejected to avoid false passes.
+
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/cli
