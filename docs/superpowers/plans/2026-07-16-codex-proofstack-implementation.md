@@ -1570,7 +1570,7 @@ git commit -m "feat(dashboard): compare proof runs and hand off repairs"
 - Generate: `apps/dashboard/public/demo/assets/*.png`
 - Test: `test/integration/demo.test.mjs`
 
-- [ ] **Step 1: Add a deterministic asset-generation script**
+- [x] **Step 1: Add a deterministic asset-generation script**
 
 ```js
 // scripts/generate-demo-assets.mjs
@@ -1597,7 +1597,7 @@ for (const state of ["broken", "repaired"]) {
 }
 ```
 
-- [ ] **Step 2: Add root scripts**
+- [x] **Step 2: Add root scripts**
 
 ```json
 "scripts": {
@@ -1609,7 +1609,7 @@ for (const state of ["broken", "repaired"]) {
 }
 ```
 
-- [ ] **Step 3: Write the integration assertion**
+- [x] **Step 3: Write the integration assertion**
 
 ```js
 // test/integration/demo.test.mjs
@@ -1624,7 +1624,7 @@ assert.equal(broken.claims.find((item) => item.id === "visible-status").verdict,
 console.log("demo integration passed");
 ```
 
-- [ ] **Step 4: Run the complete verification ladder**
+- [x] **Step 4: Run the complete verification ladder**
 
 Run: `pnpm verify && node test/integration/demo.test.mjs`
 
@@ -1634,7 +1634,7 @@ Run in a temporary directory: `pnpm --filter @proofstack/cli pack --pack-destina
 
 Expected: installed CLI generates a 100% bundle without importing source paths from the monorepo.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add scripts test package.json apps/dashboard/public/demo

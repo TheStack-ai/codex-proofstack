@@ -86,7 +86,7 @@ export function App() {
       setAssetBase(undefined)
       setError("")
     } catch (value) {
-      setError(errorMessage(value))
+      setError(value instanceof Error ? value.message : String(value))
     }
   }
 
@@ -97,7 +97,7 @@ export function App() {
       if (bundle) setSelectedClaimId(firstChangedClaim(value, bundle))
       setError("")
     } catch (value) {
-      setError(errorMessage(value))
+      setError(value instanceof Error ? value.message : String(value))
     }
   }
 

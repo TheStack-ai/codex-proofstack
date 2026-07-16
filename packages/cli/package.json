@@ -6,16 +6,22 @@
   "bin": {
     "proofstack": "./dist/main.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && esbuild src/main.ts --bundle --platform=node --format=esm --target=node20 --sourcemap --external:commander --external:execa --external:playwright --external:yaml --outfile=dist/main.js",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@proofstack/core": "workspace:*",
     "commander": "^14.0.0",
     "execa": "^9.6.0",
     "playwright": "^1.53.1",
     "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "@proofstack/core": "workspace:*",
+    "esbuild": "^0.28.1"
   }
 }

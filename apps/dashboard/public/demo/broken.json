@@ -70,7 +70,7 @@
       "checkId": "health-http",
       "type": "http",
       "verdict": "pass",
-      "summary": "HTTP 200 in 18ms; expected 200",
+      "summary": "HTTP 200 in 20ms; expected 200",
       "detail": "{\"status\":\"ok\",\"state\":\"broken\"}",
       "durationMs": 20
     },

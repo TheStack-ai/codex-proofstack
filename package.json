@@ -7,11 +7,12 @@
   "scripts": {
     "build": "pnpm -r --if-present build",
     "demo:generate": "node scripts/generate-demo-assets.mjs",
+    "demo:verify": "node test/integration/demo.test.mjs",
     "test": "pnpm --filter @proofstack/core build && pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "verify": "pnpm lint && pnpm test && pnpm typecheck && pnpm build"
+    "verify": "pnpm lint && pnpm test && pnpm typecheck && pnpm demo:generate && pnpm demo:verify && pnpm build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.4",

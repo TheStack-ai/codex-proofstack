@@ -23,10 +23,14 @@ function normalizeBundle(bundle, state) {
   bundle.runId = `demo-${state}`
   bundle.durationMs = state === "broken" ? 900 : 800
   bundle.project.rootFingerprint = `demo-${state}-fingerprint`
-  bundle.evidence = bundle.evidence.map((item) => ({
-    ...item,
-    durationMs: { browser: 520, command: 100, file: 1, http: 20, rules: 1 }[item.type] ?? 1,
-  }))
+  bundle.evidence = bundle.evidence.map((item) => {
+    const durationMs = { browser: 520, command: 100, file: 1, http: 20, rules: 1 }[item.type] ?? 1
+    return {
+      ...item,
+      summary: item.summary.replace(/\bin \d+ms\b/g, `in ${durationMs}ms`),
+      durationMs,
+    }
+  })
   return bundle
 }
 
