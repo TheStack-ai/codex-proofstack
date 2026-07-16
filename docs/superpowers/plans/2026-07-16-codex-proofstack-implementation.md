@@ -504,6 +504,10 @@ git commit -m "feat(core): define proof contracts and verdicts"
 - Test: `packages/core/test/redact.test.ts`
 - Test: `packages/core/test/compare.test.ts`
 
+Implementation note: comparison returns added and removed claims as explicit union variants instead
+of silently dropping them. Redaction covers environment-style assignments, bearer tokens, quoted
+JSON credentials, standalone OpenAI/GitHub token forms, home paths, and bounded output.
+
 - [ ] **Step 1: Write failing tests**
 
 ```ts
