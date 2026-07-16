@@ -11,8 +11,8 @@ Build a submission-grade proof dashboard that makes claim-to-evidence verificati
 - Typeface: Geist Variable and Geist Mono; no generic Inter fallback as the intended rendered face.
 - Signature: double-bezel proof surfaces and an evidence beam linking the selected claim to proof.
 - Accessibility outranks visual flourish; verdicts always include text and shape.
-- The default broken-run selection is the highest-weight required failure, which exposes browser
-  proof before lower-weight rule failures.
+- The default comparison keeps the repaired run primary and selects the highest-weight changed
+  claim, exposing the browser proof that closed the largest gap.
 - The document owns scrolling; claim and evidence cards never create competing page-height scroll
   regions.
 - `react-grab` and `react-scan` load only in development. Production output contains neither tool.
@@ -59,8 +59,9 @@ Primary journey: understand run trust, locate a non-passing required claim, insp
 
 - Task 9 implements live DOM primitives, local bundle import, highest-weight failure selection,
   screenshot evidence, and the bounded repair packet.
-- Task 10 should load repaired and broken bundles together, make the repaired run primary, add the
-  comparison strip, and keep file-import comparison semantics explicit.
+- Task 10 loads repaired and broken bundles together, keeps the repaired run primary, exposes
+  claim-level changes, and preserves the current failing bundle as the repair source even when
+  users import runs in reverse order.
 - Preserve `StatusBadge`, `ClaimMatrix`, and `EvidencePanel` anatomy; their keyboard and non-color
   status semantics are already covered by component tests and live captures.
 - Visual-review subagents remain unavailable because the repository instructions prohibit task
@@ -83,3 +84,11 @@ Primary journey: understand run trust, locate a non-passing required claim, insp
   browser evidence image loaded at 1440 × 900.
 - Static React audit: React Doctor 0.7.8 reported 100/100 with no issues.
 - Production gate: Vite build passed and contained no `react-grab` or `react-scan` strings.
+- Final primitive showcase, 375px / 768px / 1280px:
+  `.omo/evidence/proofstack-visual-qa-final/showcase-{375,768,1280}.png`
+- Interaction states: action rest/mid/settled/focus and claim rest/mid/settled are under
+  `.omo/evidence/proofstack-visual-qa-final/`.
+- Comparison dashboard, 390px / 768px / 1280px:
+  `.omo/evidence/proofstack-dashboard-task10/dashboard-comparison-{390,768,1280}.png`
+- Final browser metrics: no horizontal overflow at any target width, no console/page errors,
+  exact repair-packet clipboard copy, and reduced-motion durations of `0.01ms`.

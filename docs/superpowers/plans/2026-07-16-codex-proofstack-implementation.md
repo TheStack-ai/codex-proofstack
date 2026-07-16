@@ -1497,7 +1497,7 @@ git commit -m "feat(dashboard): visualize claims and evidence"
 - Modify: `apps/dashboard/src/styles.css`
 - Test: `apps/dashboard/test/comparison.test.tsx`
 
-- [ ] **Step 1: Write failing comparison and clipboard tests**
+- [x] **Step 1: Write failing comparison and clipboard tests**
 
 ```tsx
 // apps/dashboard/test/comparison.test.tsx
@@ -1520,7 +1520,7 @@ it("copies the exact repair packet", async () => {
 });
 ```
 
-- [ ] **Step 2: Implement comparison component**
+- [x] **Step 2: Implement comparison component**
 
 ```tsx
 // apps/dashboard/src/components/RunComparison.tsx
@@ -1528,7 +1528,7 @@ import type { RunChange } from "@proofstack/core";
 export function RunComparison({ changes }: { changes: RunChange[] }) { return <section className="comparison"><p className="eyebrow">RUN COMPARISON</p><div>{changes.map((item) => <article key={item.id} className={`change-${item.change}`}><strong>{item.id}</strong><span>{item.before} → {item.after}</span><b>{item.change}</b></article>)}</div></section>; }
 ```
 
-- [ ] **Step 3: Add dual-run loading to App**
+- [x] **Step 3: Add dual-run loading to App**
 
 Load `/demo/broken.json` and `/demo/repaired.json` on startup, retain the repaired run as the primary selectable report, call `compareRuns(before.claims, after.claims)`, and render `RunComparison`. File import replaces only the primary report and labels comparison unavailable unless a second file is selected.
 
@@ -1538,7 +1538,7 @@ const [bundle, setBundle] = useState<ProofBundle | null>(null);
 const changes = before && bundle ? compareRuns(before.claims, bundle.claims) : [];
 ```
 
-- [ ] **Step 4: Style comparison states**
+- [x] **Step 4: Style comparison states**
 
 ```css
 .comparison { margin-top:16px; padding:24px; border:1px solid var(--line); border-radius:22px; background:#111417; }
@@ -1549,7 +1549,7 @@ const changes = before && bundle ? compareRuns(before.claims, bundle.claims) : [
 .change-unchanged b { color:#8d98a3; }
 ```
 
-- [ ] **Step 5: Test and commit**
+- [x] **Step 5: Test and commit**
 
 Run: `pnpm --filter @proofstack/dashboard test && pnpm --filter @proofstack/dashboard build`
 

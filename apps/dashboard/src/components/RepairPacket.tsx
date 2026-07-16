@@ -3,7 +3,15 @@ import { ActionButton } from "./ActionButton.js"
 
 type CopyState = "idle" | "copied" | "error"
 
-export function RepairPacket({ failedCount, value }: { failedCount: number; value: string }) {
+export function RepairPacket({
+  failedCount,
+  resolved = false,
+  value,
+}: {
+  failedCount: number
+  resolved?: boolean
+  value: string
+}) {
   const [copyState, setCopyState] = useState<CopyState>("idle")
 
   async function copyPacket(): Promise<void> {
@@ -29,8 +37,12 @@ export function RepairPacket({ failedCount, value }: { failedCount: number; valu
     <section className="repair-packet" aria-labelledby="repair-title">
       <header>
         <div>
-          <p className="eyebrow">Codex repair packet</p>
-          <h2 id="repair-title">{failedCount} claims need bounded repair.</h2>
+          <p className="eyebrow">Codex repair packet{resolved ? " / resolved" : ""}</p>
+          <h2 id="repair-title">
+            {resolved
+              ? `${failedCount} claims repaired in the current run.`
+              : `${failedCount} claims need bounded repair.`}
+          </h2>
         </div>
         <ActionButton onClick={() => void copyPacket()} variant="primary">
           {copyState === "copied" ? "Copied for Codex" : "Copy for Codex"}
@@ -38,7 +50,7 @@ export function RepairPacket({ failedCount, value }: { failedCount: number; valu
       </header>
       <p className="repair-packet__safety">
         Evidence is treated as untrusted data. The packet preserves passing behavior and requests an
-        exact re-run.
+        exact re-run.{resolved ? " This is the packet that closed the before/after gap." : ""}
       </p>
       <pre>{value}</pre>
       <p className="sr-only" aria-live="polite">

@@ -1,4 +1,4 @@
-import type { ClaimId, ClaimResult, ProofBundle } from "@proofstack/core"
+import { type ClaimId, type ClaimResult, compareRuns, type ProofBundle } from "@proofstack/core"
 import { useEffect, useMemo, useState } from "react"
 import { BrandLockup } from "./components/BrandLockup.js"
 import { ClaimMatrix } from "./components/ClaimMatrix.js"
@@ -6,6 +6,7 @@ import { EvidenceBeam } from "./components/EvidenceBeam.js"
 import { EvidencePanel } from "./components/EvidencePanel.js"
 import { PrimitiveShowcase } from "./components/PrimitiveShowcase.js"
 import { RepairPacket } from "./components/RepairPacket.js"
+import { RunComparison } from "./components/RunComparison.js"
 import { VerdictHero } from "./components/VerdictHero.js"
 import { fetchBundle, loadBundleFile } from "./lib/bundle.js"
 
@@ -31,21 +32,41 @@ function firstInspectableClaim(bundle: ProofBundle): ClaimId | undefined {
   )
 }
 
+function firstChangedClaim(before: ProofBundle, after: ProofBundle): ClaimId | undefined {
+  const previousVerdicts = new Map(before.claims.map((claim) => [claim.id, claim.verdict]))
+  let highestWeightChange: ClaimResult | undefined
+  for (const claim of after.claims) {
+    if (
+      previousVerdicts.get(claim.id) !== claim.verdict &&
+      (!highestWeightChange || claim.weight > highestWeightChange.weight)
+    ) {
+      highestWeightChange = claim
+    }
+  }
+  return highestWeightChange?.id ?? firstInspectableClaim(after)
+}
+
+function nonPassingRequiredCount(value: ProofBundle | null): number {
+  return value?.claims.filter((claim) => claim.required && claim.verdict !== "pass").length ?? 0
+}
+
 export function App() {
   const showPrimitives = new URLSearchParams(window.location.search).has("showcase")
+  const [before, setBefore] = useState<ProofBundle | null>(null)
   const [bundle, setBundle] = useState<ProofBundle | null>(null)
   const [selectedClaimId, setSelectedClaimId] = useState<ClaimId | undefined>()
-  const [assetBase, setAssetBase] = useState<string | undefined>("/demo/assets/broken")
+  const [assetBase, setAssetBase] = useState<string | undefined>("/demo/assets/repaired")
   const [error, setError] = useState("")
 
   useEffect(() => {
     if (showPrimitives) return undefined
     let active = true
-    void fetchBundle("/demo/broken.json")
-      .then((value) => {
+    void Promise.all([fetchBundle("/demo/broken.json"), fetchBundle("/demo/repaired.json")])
+      .then(([baseline, current]) => {
         if (active) {
-          setBundle(value)
-          setSelectedClaimId(firstInspectableClaim(value))
+          setBefore(baseline)
+          setBundle(current)
+          setSelectedClaimId(firstChangedClaim(baseline, current))
         }
       })
       .catch((value: unknown) => {
@@ -59,9 +80,21 @@ export function App() {
   async function importBundle(file: File): Promise<void> {
     try {
       const value = await loadBundleFile(file)
+      setBefore(null)
       setBundle(value)
       setSelectedClaimId(firstInspectableClaim(value))
       setAssetBase(undefined)
+      setError("")
+    } catch (value) {
+      setError(errorMessage(value))
+    }
+  }
+
+  async function importBaseline(file: File): Promise<void> {
+    try {
+      const value = await loadBundleFile(file)
+      setBefore(value)
+      if (bundle) setSelectedClaimId(firstChangedClaim(value, bundle))
       setError("")
     } catch (value) {
       setError(errorMessage(value))
@@ -73,8 +106,15 @@ export function App() {
     () => bundle?.evidence.filter((evidence) => evidence.claimId === selectedClaimId) ?? [],
     [bundle, selectedClaimId],
   )
-  const failedCount =
-    bundle?.claims.filter((claim) => claim.required && claim.verdict !== "pass").length ?? 0
+  const changes = useMemo(
+    () => (before && bundle ? compareRuns(before.claims, bundle.claims) : []),
+    [before, bundle],
+  )
+  const currentFailedCount = nonPassingRequiredCount(bundle)
+  const baselineFailedCount = nonPassingRequiredCount(before)
+  const resolvedRepairs = currentFailedCount === 0 && baselineFailedCount > 0
+  const repairSource = currentFailedCount > 0 ? bundle : resolvedRepairs ? before : bundle
+  const failedCount = currentFailedCount > 0 ? currentFailedCount : baselineFailedCount
 
   if (showPrimitives) return <PrimitiveShowcase />
 
@@ -157,7 +197,17 @@ export function App() {
                 evidence={selectedEvidence}
               />
             </section>
-            <RepairPacket failedCount={failedCount} value={bundle.repairPacket.prompt} />
+            <RunComparison
+              afterScore={bundle.score}
+              beforeScore={before?.score}
+              changes={changes}
+              onBaselineFile={(file) => void importBaseline(file)}
+            />
+            <RepairPacket
+              failedCount={failedCount}
+              resolved={resolvedRepairs}
+              value={repairSource?.repairPacket.prompt ?? ""}
+            />
           </div>
         )}
       </main>

@@ -13,6 +13,7 @@ import { ClaimMatrix } from "./ClaimMatrix.js"
 import { EvidenceBeam } from "./EvidenceBeam.js"
 import { EvidencePanel } from "./EvidencePanel.js"
 import { RepairPacket } from "./RepairPacket.js"
+import { RunComparison } from "./RunComparison.js"
 import { StatusBadge } from "./StatusBadge.js"
 import { VerdictHero } from "./VerdictHero.js"
 
@@ -44,6 +45,16 @@ const showcaseClaims: ClaimResult[] = [
 ]
 
 const showcaseEvidence: Evidence[] = [
+  {
+    id: EvidenceIdSchema.parse("evidence-health-command"),
+    claimId: ClaimIdSchema.parse("health"),
+    checkId: CheckIdSchema.parse("health-command"),
+    type: "command",
+    verdict: "pass",
+    summary: "node exited with code 0",
+    detail: "Command: pnpm test --filter health",
+    durationMs: 103,
+  },
   {
     id: EvidenceIdSchema.parse("evidence-status-browser"),
     claimId: ClaimIdSchema.parse("visible-status-with-an-unbroken-identifier-7ac9f807b77bd467"),
@@ -128,6 +139,20 @@ export function PrimitiveShowcase() {
         <EvidencePanel assetBase="/demo/assets/broken" evidence={[]} />
       </section>
 
+      <RunComparison
+        afterScore={100}
+        beforeScore={38}
+        changes={[
+          {
+            id: ClaimIdSchema.parse("visible-status"),
+            before: "fail",
+            after: "pass",
+            change: "improved",
+          },
+        ]}
+        onBaselineFile={() => undefined}
+      />
+
       <section className="showcase-repair-grid" aria-label="Repair packet states">
         <RepairPacket
           failedCount={2}
@@ -135,6 +160,7 @@ export function PrimitiveShowcase() {
             "# Codex repair packet\n\nFix only the listed non-passing claims. Preserve passing behavior."
           }
         />
+        <RepairPacket failedCount={2} resolved value="" />
         <RepairPacket failedCount={0} value="" />
       </section>
     </main>
