@@ -328,11 +328,19 @@ git commit -m "chore: scaffold ProofStack workspace"
 ### Task 2: Define contracts, bundles, and deterministic verdicts
 
 **Files:**
+- Create: `packages/core/src/contract-schema.ts`
+- Create: `packages/core/src/bundle-schema.ts`
 - Create: `packages/core/src/schema.ts`
 - Create: `packages/core/src/verdict.ts`
 - Create: `packages/core/src/index.ts`
 - Test: `packages/core/test/schema.test.ts`
+- Test: `packages/core/test/bundle-schema.test.ts`
 - Test: `packages/core/test/verdict.test.ts`
+
+Implementation note: keep the contract and proof-bundle boundary schemas in separate files so each
+stays below the 250-line limit. `schema.ts` is the public re-export surface. The repair packet is a
+typed object (`version`, `failedClaimIds`, `prompt`) so tests can assert stable IDs instead of
+fragile natural-language prompt text.
 
 - [ ] **Step 1: Write failing schema and verdict tests**
 
@@ -438,7 +446,7 @@ export const ClaimResultSchema = z.object({
 export const ProofBundleSchema = z.object({
   schemaVersion: z.literal("1.0"), runId: z.string(), generatedAt: z.string().datetime(),
   project: z.object({ name: z.string(), root: z.string(), rootFingerprint: z.string() }),
-  score: z.number().min(0).max(100), incomplete: z.boolean(),
+  score: z.number().min(0).max(100), complete: z.boolean(),
   claims: z.array(ClaimResultSchema), evidence: z.array(EvidenceSchema), repairPacket: z.string(),
 });
 
@@ -962,7 +970,7 @@ export async function runVerification(contract: ProofContract, root: string): Pr
     evidence.push(...results.map((item) => ({ ...item, claimId: claim.id })));
     claims.push({ id: claim.id, title: claim.title, required: claim.required, weight: claim.weight, verdict: aggregateVerdict(results.map((item) => item.verdict)), evidenceIds: results.map((item) => item.id) });
   }
-  const bundleBase = { schemaVersion: "1.0" as const, runId, generatedAt: new Date().toISOString(), project: { name: contract.project, root: "~project", rootFingerprint: createHash("sha256").update(root).digest("hex").slice(0, 12) }, score: calculateScore(claims), incomplete: claims.some((claim) => claim.verdict === "unknown"), claims, evidence };
+  const bundleBase = { schemaVersion: "1.0" as const, runId, generatedAt: new Date().toISOString(), project: { name: contract.project, root: "~project", rootFingerprint: createHash("sha256").update(root).digest("hex").slice(0, 12) }, score: calculateScore(claims), complete: claims.every((claim) => claim.verdict !== "unknown"), claims, evidence };
   return { ...bundleBase, repairPacket: createRepairPacket(claims, evidence) };
 }
 ```
@@ -1306,7 +1314,7 @@ import { expect, it } from "vitest";
 import { VerdictHero } from "../src/components/VerdictHero.js";
 
 it("shows the verification score and incomplete state", () => {
-  render(<VerdictHero score={43} incomplete project="release-console" />);
+  render(<VerdictHero score={43} complete={false} project="release-console" />);
   expect(screen.getByText("43% verified")).toBeVisible();
   expect(screen.getByText(/incomplete evidence/i)).toBeVisible();
 });
@@ -1318,8 +1326,8 @@ it("shows the verification score and incomplete state", () => {
 // apps/dashboard/src/components/VerdictHero.tsx
 import type { CSSProperties } from "react";
 
-export function VerdictHero({ score, incomplete, project }: { score: number; incomplete: boolean; project: string }) {
-  return <section className="verdict-hero"><div><p className="eyebrow">VERIFICATION VERDICT</p><h2>{score}% verified</h2><p>{project}</p></div><div className={`score-ring score-${score === 100 ? "pass" : "mixed"}`} style={{ "--score": `${score * 3.6}deg` } as CSSProperties}><span>{score}</span></div>{incomplete && <p className="status-unknown">Incomplete evidence</p>}</section>;
+export function VerdictHero({ score, complete, project }: { score: number; complete: boolean; project: string }) {
+  return <section className="verdict-hero"><div><p className="eyebrow">VERIFICATION VERDICT</p><h2>{score}% verified</h2><p>{project}</p></div><div className={`score-ring score-${score === 100 ? "pass" : "mixed"}`} style={{ "--score": `${score * 3.6}deg` } as CSSProperties}><span>{score}</span></div>{!complete && <p className="status-unknown">Incomplete evidence</p>}</section>;
 }
 ```
 
@@ -1388,7 +1396,7 @@ export function App() {
       <h1>Evidence for every delivery claim.</h1>
       {error && <p role="alert">{error}</p>}
       {bundle && <>
-        <VerdictHero score={bundle.score} incomplete={bundle.incomplete} project={bundle.project.name} />
+        <VerdictHero score={bundle.score} complete={bundle.complete} project={bundle.project.name} />
         <ClaimMatrix claims={bundle.claims} selected={selectedClaim} onSelect={setSelectedClaim} />
         <EvidencePanel evidence={selectedEvidence} />
         <RepairPacket value={bundle.repairPacket} />
