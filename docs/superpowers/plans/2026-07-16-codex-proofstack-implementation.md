@@ -606,13 +606,14 @@ git commit -m "feat(core): redact evidence and compare runs"
 - Create: `packages/cli/src/root.ts`
 - Create: `packages/cli/src/load-contract.ts`
 - Create: `packages/cli/src/adapters/types.ts`
+- Create: `packages/cli/src/adapters/project-file.ts`
 - Create: `packages/cli/src/adapters/file.ts`
 - Create: `packages/cli/src/adapters/rules.ts`
 - Create: `packages/cli/src/adapters/command.ts`
 - Test: `packages/cli/test/root.test.ts`
 - Test: `packages/cli/test/local-adapters.test.ts`
 
-- [ ] **Step 1: Write failing root and adapter tests**
+- [x] **Step 1: Write failing root and adapter tests**
 
 ```ts
 // packages/cli/test/root.test.ts
@@ -654,13 +655,13 @@ it("refuses a command outside the allowlist", async () => {
 });
 ```
 
-- [ ] **Step 2: Verify tests fail**
+- [x] **Step 2: Verify tests fail**
 
 Run: `pnpm --filter @proofstack/cli test`
 
 Expected: FAIL because root and adapters are missing.
 
-- [ ] **Step 3: Implement resolution, loading, and adapter interfaces**
+- [x] **Step 3: Implement resolution, loading, and adapter interfaces**
 
 ```ts
 // packages/cli/src/root.ts
@@ -698,7 +699,7 @@ export interface AdapterContext { root: string; allowedCommands: string[]; home:
 export type AdapterResult = Omit<Evidence, "claimId">;
 ```
 
-- [ ] **Step 4: Implement file, rules, and command adapters**
+- [x] **Step 4: Implement file, rules, and command adapters**
 
 ```ts
 // packages/cli/src/adapters/file.ts
@@ -756,11 +757,13 @@ export async function runCommandCheck(check: Extract<Check, { type: "command" }>
 }
 ```
 
-- [ ] **Step 5: Run tests and commit**
+- [x] **Step 5: Run tests and commit**
 
 Run: `pnpm --filter @proofstack/cli test && pnpm --filter @proofstack/cli typecheck`
 
 Expected: root and local-adapter tests pass; no shell invocation exists.
+
+Implementation note: shared project-file resolution also rejects lexical and symbolic-link escapes while allowing valid in-root names such as `..notes.txt`; destructive executables remain blocked even if allowlisted.
 
 ```bash
 git add packages/cli
