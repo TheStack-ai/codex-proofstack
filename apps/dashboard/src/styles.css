@@ -1,0 +1,162 @@
+:root {
+  color: #f4f6fb;
+  background: #07080b;
+  font-family: "Geist Variable", "Avenir Next", ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --surface-canvas: #07080b;
+  --surface-atmosphere: #101122;
+  --surface-base: #0d0f14;
+  --surface-raised: #141720;
+  --text-primary: #f4f6fb;
+  --text-secondary: #b6bdcb;
+  --text-muted: #7d8595;
+  --rim-subtle: rgba(255, 255, 255, 0.07);
+  --accent-primary: #7c72ff;
+  --focus-ring: #b7b0ff;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-inline-size: 320px;
+  min-block-size: 100dvb;
+  margin: 0;
+  background:
+    radial-gradient(circle at 72% -12%, var(--surface-atmosphere) 0%, transparent 38%),
+    var(--surface-canvas);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.app-shell {
+  inline-size: min(100% - (var(--space-6) * 2), 1440px);
+  min-block-size: 100dvb;
+  margin-inline: auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-block-size: 76px;
+  border-block-end: 1px solid var(--rim-subtle);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-primary);
+  font-weight: 620;
+  text-decoration: none;
+}
+
+.brand svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+.brand small {
+  color: var(--text-muted);
+  font-family: "Geist Mono Variable", monospace;
+  font-size: 0.75rem;
+}
+
+.bundle-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding-inline: var(--space-5);
+  overflow: hidden;
+  border: 1px solid var(--rim-subtle);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 560;
+}
+
+.bundle-button input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}
+
+.loading-stage {
+  display: grid;
+  align-content: center;
+  min-block-size: calc(100dvb - 76px);
+  padding-block: var(--space-12);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+  font-family: "Geist Mono Variable", monospace;
+  font-size: 0.75rem;
+  font-weight: 560;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.loading-stage h1 {
+  max-inline-size: 12ch;
+  margin: 0;
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  font-weight: 560;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
+}
+
+.loading-stage > p:last-child {
+  max-inline-size: 68ch;
+  margin: var(--space-6) 0 0;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    inline-size: min(100% - (var(--space-4) * 2), 720px);
+  }
+
+  .topbar {
+    min-block-size: 68px;
+  }
+
+  .bundle-button {
+    padding-inline: var(--space-4);
+  }
+}

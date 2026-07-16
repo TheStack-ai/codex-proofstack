@@ -1195,7 +1195,7 @@ git commit -m "feat(demo): prove green tests can miss a broken product"
 - Create: `apps/dashboard/src/App.tsx`
 - Test: `apps/dashboard/test/bundle.test.ts`
 
-- [ ] **Step 1: Add dashboard manifest and configs**
+- [x] **Step 1: Add dashboard manifest and configs**
 
 ```json
 // apps/dashboard/package.json
@@ -1260,7 +1260,7 @@ import "@testing-library/jest-dom/vitest";
 </html>
 ```
 
-- [ ] **Step 2: Write a failing bundle-loader test**
+- [x] **Step 2: Write a failing bundle-loader test**
 
 ```ts
 // apps/dashboard/test/bundle.test.ts
@@ -1272,7 +1272,7 @@ it("rejects arbitrary JSON that is not a proof bundle", () => {
 });
 ```
 
-- [ ] **Step 3: Implement local bundle validation**
+- [x] **Step 3: Implement local bundle validation**
 
 ```ts
 // apps/dashboard/src/lib/bundle.ts
@@ -1283,7 +1283,7 @@ export async function loadBundleFile(file: File): Promise<ProofBundle> { return 
 export async function fetchBundle(path: string): Promise<ProofBundle> { const response = await fetch(path); if (!response.ok) throw new Error(`Bundle request failed: ${response.status}`); return parseBundle(await response.json()); }
 ```
 
-- [ ] **Step 4: Add the initial application shell**
+- [x] **Step 4: Add the initial application shell**
 
 ```tsx
 // apps/dashboard/src/App.tsx
@@ -1308,7 +1308,7 @@ import "./styles.css";
 createRoot(document.getElementById("root")!).render(<StrictMode><App /></StrictMode>);
 ```
 
-- [ ] **Step 5: Install, test, and commit**
+- [x] **Step 5: Install, test, and commit**
 
 Run: `pnpm install && pnpm --filter @proofstack/dashboard test && pnpm --filter @proofstack/dashboard typecheck`
 
