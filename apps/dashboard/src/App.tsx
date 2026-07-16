@@ -10,6 +10,9 @@ import { RunComparison } from "./components/RunComparison.js"
 import { VerdictHero } from "./components/VerdictHero.js"
 import { fetchBundle, loadBundleFile } from "./lib/bundle.js"
 
+const appBase = import.meta.env.BASE_URL
+const demoBase = `${appBase}demo`
+
 function errorMessage(value: unknown): string {
   return value instanceof Error ? value.message : String(value)
 }
@@ -55,13 +58,16 @@ export function App() {
   const [before, setBefore] = useState<ProofBundle | null>(null)
   const [bundle, setBundle] = useState<ProofBundle | null>(null)
   const [selectedClaimId, setSelectedClaimId] = useState<ClaimId | undefined>()
-  const [assetBase, setAssetBase] = useState<string | undefined>("/demo/assets/repaired")
+  const [assetBase, setAssetBase] = useState<string | undefined>(`${demoBase}/assets/repaired`)
   const [error, setError] = useState("")
 
   useEffect(() => {
     if (showPrimitives) return undefined
     let active = true
-    void Promise.all([fetchBundle("/demo/broken.json"), fetchBundle("/demo/repaired.json")])
+    void Promise.all([
+      fetchBundle(`${demoBase}/broken.json`),
+      fetchBundle(`${demoBase}/repaired.json`),
+    ])
       .then(([baseline, current]) => {
         if (active) {
           setBefore(baseline)
@@ -125,7 +131,7 @@ export function App() {
       </a>
       <header className="product-topbar">
         <div className="product-topbar__inner">
-          <a className="product-brand" href="/" aria-label="ProofStack home">
+          <a className="product-brand" href={appBase} aria-label="ProofStack home">
             <BrandLockup />
           </a>
           <div className="product-actions">

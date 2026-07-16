@@ -17,6 +17,8 @@ import { RunComparison } from "./RunComparison.js"
 import { StatusBadge } from "./StatusBadge.js"
 import { VerdictHero } from "./VerdictHero.js"
 
+const showcaseAssetBase = `${import.meta.env.BASE_URL}demo/assets/broken`
+
 const showcaseClaims: ClaimResult[] = [
   {
     id: ClaimIdSchema.parse("health"),
@@ -116,7 +118,7 @@ export function PrimitiveShowcase() {
         <ClaimMatrix claims={showcaseClaims} selected={selected} onSelect={setSelected} />
         <EvidenceBeam verdict={selectedClaim?.verdict ?? "unknown"} />
         <EvidencePanel
-          assetBase="/demo/assets/broken"
+          assetBase={showcaseAssetBase}
           claim={selectedClaim}
           evidence={selectedEvidence}
         />
@@ -136,7 +138,7 @@ export function PrimitiveShowcase() {
             <span />
           </div>
         </article>
-        <EvidencePanel assetBase="/demo/assets/broken" evidence={[]} />
+        <EvidencePanel assetBase={showcaseAssetBase} evidence={[]} />
       </section>
 
       <RunComparison
