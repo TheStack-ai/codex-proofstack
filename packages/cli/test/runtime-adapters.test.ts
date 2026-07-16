@@ -22,6 +22,7 @@ const server = createServer((request, response) => {
 })
 
 let serverUrl = ""
+const BROWSER_TEST_TIMEOUT_MS = 20_000
 
 beforeAll(async () => {
   await new Promise<void>((resolve, reject) => {
@@ -97,38 +98,46 @@ describe("runtime adapters", () => {
     expect(whenRun.summary).toMatch(/protocol/i)
   })
 
-  it("fails missing browser-visible text and writes a screenshot", async () => {
-    const givenContext = await createContext()
-    const givenCheck = browserCheck({
-      id: "copy",
-      type: "browser",
-      url: serverUrl,
-      text: "Evidence verified",
-      screenshot: "copy.png",
-    })
+  it(
+    "fails missing browser-visible text and writes a screenshot",
+    async () => {
+      const givenContext = await createContext()
+      const givenCheck = browserCheck({
+        id: "copy",
+        type: "browser",
+        url: serverUrl,
+        text: "Evidence verified",
+        screenshot: "copy.png",
+      })
 
-    const whenRun = await runBrowserCheck(givenCheck, givenContext)
+      const whenRun = await runBrowserCheck(givenCheck, givenContext)
 
-    expect(whenRun.verdict).toBe("fail")
-    expect(whenRun.asset).toBe("copy.png")
-    const whenScreenshot = await stat(join(givenContext.assetsDir, "copy.png"))
-    expect(whenScreenshot.size).toBeGreaterThan(0)
-    expect(whenScreenshot.mode & 0o777).toBe(0o600)
-  })
+      expect(whenRun.verdict).toBe("fail")
+      expect(whenRun.asset).toBe("copy.png")
+      const whenScreenshot = await stat(join(givenContext.assetsDir, "copy.png"))
+      expect(whenScreenshot.size).toBeGreaterThan(0)
+      expect(whenScreenshot.mode & 0o777).toBe(0o600)
+    },
+    BROWSER_TEST_TIMEOUT_MS,
+  )
 
-  it("passes a visible accessible role and name", async () => {
-    const givenCheck = browserCheck({
-      id: "button",
-      type: "browser",
-      url: serverUrl,
-      role: "button",
-      name: "Run proof",
-    })
+  it(
+    "passes a visible accessible role and name",
+    async () => {
+      const givenCheck = browserCheck({
+        id: "button",
+        type: "browser",
+        url: serverUrl,
+        role: "button",
+        name: "Run proof",
+      })
 
-    const whenRun = await runBrowserCheck(givenCheck, await createContext())
+      const whenRun = await runBrowserCheck(givenCheck, await createContext())
 
-    expect(whenRun.verdict).toBe("pass")
-  })
+      expect(whenRun.verdict).toBe("pass")
+    },
+    BROWSER_TEST_TIMEOUT_MS,
+  )
 
   it("refuses screenshot paths that escape the assets directory", async () => {
     const givenCheck = browserCheck({
